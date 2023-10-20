@@ -45,6 +45,7 @@
 	</li>
 	<li>create networks and restart networking
 	<ul>
+		<li><code>nano ~/fabriclab/interfaces.txt</code> # modify IP details on mgmt interface to match static details created on boot</li>
 		<li><code>cp /etc/network/interfaces /etc/network/interfaces.bak</code> # create backup of initial network config</li>
 		<li><code>cp ~/fabriclab/interfaces.txt /etc/network/interfaces</code> # copy interface config to network file</li>
 		<li><code>systemctl restart networking</code></li>
