@@ -26,10 +26,10 @@
 	<li>download files
 	<ul>
 		<li>vJunos qcow ( place in new qcow directory)</li>
-		<li>&nbsp;SSR iso (download via gui or wget)</li>
-		<li>&nbsp;SRX iso</li>
-		<li>&nbsp;ubuntu for hosts iso</li>
-		<li>&nbsp;mist edge iso</li>
+		<li>&nbsp;SSR iso (download via gui or wget to /var/lib/vz/template/iso)</li>
+		<li>&nbsp;SRX iso (download via gui or wget to /var/lib/vz/template/iso)</li>
+		<li>&nbsp;ubuntu for hosts iso (download via gui or wget to /var/lib/vz/template/iso)</li>
+		<li>&nbsp;mist edge iso (download via gui or wget to /var/lib/vz/template/iso)</li>
 	</ul>
 	</li>
 	<li>sync with github&nbsp;
@@ -39,8 +39,8 @@
 	</li>
 	<li>make scripts executable
 	<ul>
-		<li>chmod +x ~/fabriclab/create_vswitch.py</li>
-		<li>chmod +x ~/fabriclab/enable_lldp.sh</li>
+		<li><code>chmod +x ~/fabriclab/create_vswitch.py</li></code>
+		<li><code>chmod +x ~/fabriclab/enable_lldp.sh</li></code>
 	</ul>
 	</li>
 	<li>create networks and restart networking
@@ -72,7 +72,7 @@
 	<li>create virtual switches
 	<ul>
 		<li><code>./fabriclab/create_vswitch.py</code></li>
-		<li><code>vm_name needs to be a valid domain name, for example &#39;core-a.switch&#39; </code></li>
+		<li><code>vm_name needs to be a valid domain name and script will append uld &#39;core-a.switch&#39; </code></li>
 		<li>vm_id is a three digit UID, for example &#39;201&#39;. This will also denote the port for the console ( in this case would be 5201)</li>
 	</ul>
 	</li>
@@ -83,7 +83,7 @@
 	</li>
 	<li>adopt switches
 	<ul>
-		<li>console into the switches from the proxmox cli using &#39;telnet localhost 5{vm_id}</li>
+		<li>console into the switches from the proxmox cli using &#39;telnet localhost 5{vm_id}'</li>
 		<li>log on with &#39;root&#39; no password</li>
 		<li>paste config shown in switch_default.txt&#39; adding in specific SSH-RSA detail from the mist org adopt function</li>
 		<li>commit</li>
