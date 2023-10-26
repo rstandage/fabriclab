@@ -25,7 +25,7 @@
 	</li>
 	<li>download files
 	<ul>
-		<li>Download <a href="https://support.juniper.net/support/downloads/?p=vjunos">vJunos and place in newly created qcow directory</a></li>
+		<li>Download <a href="https://support.juniper.net/support/downloads/?p=vjunos">vJunos</a> and place in newly created qcow directory</li>
 		<li>&nbsp;SSR iso (download via gui or wget to /var/lib/vz/template/iso)</li>
 		<li>&nbsp;SRX iso (download via gui or wget to /var/lib/vz/template/iso)</li>
 		<li>&nbsp;ubuntu for hosts iso (download via gui or wget to /var/lib/vz/template/iso)</li>
