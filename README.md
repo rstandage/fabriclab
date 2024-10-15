@@ -85,14 +85,19 @@
 	<ul>
 		<li>console into the switches from the proxmox cli using &#39;telnet localhost 5{vm_id}'</li>
 		<li>log on with &#39;root&#39; no password</li>
-		<li>paste config shown in switch_default.txt&#39; adding in specific SSH-RSA detail from the mist org adopt function</li>
+		<li>paste 'adopt switch' config from Mist portal</li>
 		<li>commit</li>
 	</ul>
 	</li>
 	<li>create switch template</li>
+	<ul>
 		<li>fabric_demo.json can be imported as an example</li>
+	</ul>
 	<li>create site</li>
 	<li>assign switches to site</li>
+	<ul>
+		<li>Name Switches and apply roles</li>
+	</ul>
 	<li>build fabric
 	<ul>
 		<li>if lldp is not working, manaully run ~/fabriclab/enable_lldp.sh</li>
