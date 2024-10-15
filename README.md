@@ -90,6 +90,7 @@
 	</ul>
 	</li>
 	<li>create switch template</li>
+		<li>fabric_demo.json can be imported as an example</li>
 	<li>create site</li>
 	<li>assign switches to site</li>
 	<li>build fabric
