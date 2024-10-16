@@ -27,7 +27,7 @@
 	<ul>
 		<li>Download <a href="https://support.juniper.net/support/downloads/?p=vjunos">vJunos</a> and place in newly created qcow directory</li>
 		<li>&nbsp;SSR iso (download via gui or wget to /var/lib/vz/template/iso)</li>
-		<li>&nbsp;SRX iso (download via gui or wget to /var/lib/vz/template/iso)</li>
+		<li>&nbsp;SRX iso (download via gui or wget to /var/lib/vz/template/qcow)</li>
 		<li>&nbsp;ubuntu for hosts iso (download via gui or wget to /var/lib/vz/template/iso)</li>
 		<li>&nbsp;mist edge iso (download via gui or wget to /var/lib/vz/template/iso)</li>
 	</ul>
@@ -72,19 +72,21 @@
 	<li>create virtual switches
 	<ul>
 		<li><code>./fabriclab/create_vswitch.py</code></li>
-		<li><code>vm_name needs to be a valid domain name and script will append uld &#39;core-a.switch&#39; </code></li>
+		<li><code>vm_name needs to be a valid domain name. Script will append '.switch' as uld &#39;core-a.switch&#39; </code></li>
 		<li>vm_id is a three digit UID, for example &#39;201&#39;. This will also denote the port for the console ( in this case would be 5201)</li>
 	</ul>
 	</li>
 	<li>modify assigned bridges on switches for the required connectivity
 	<ul>
-		<li>can be done via GUI, bonds are names for their function and act as a point-to-point virtual cable</li>
+		<li>by default all interfaces are in bond500</li>
+		<li>best done via GUI, bonds are named for their function ( e.g. c1-a1 means core1 to access1) and act as a point-to-point sudo wire</li>
 	</ul>
 	</li>
 	<li>adopt switches
 	<ul>
 		<li>console into the switches from the proxmox cli using &#39;telnet localhost 5{vm_id}'</li>
 		<li>log on with &#39;root&#39; no password</li>
+		<li>set root password 'set system root-authentication plaintext'</li>
 		<li>paste 'adopt switch' config from Mist portal</li>
 		<li>commit</li>
 	</ul>
