@@ -1,0 +1,22 @@
+# Mist Adoption Template - Example
+# 
+# This is an example template showing the format.
+# DO NOT use this file directly - create your own from actual Mist adoption commands.
+#
+# To create your own template:
+# 1. Get adoption commands from Mist Dashboard (Organization > Inventory > Adopt Switches)
+# 2. Save them to a file (e.g., mist-commands.txt)
+# 3. Run: ./convert_mist_adoption.py -i mist-commands.txt -o templates/my-adopt.template
+# 4. Use with: ./fabriclab.py create --id 201 --name sw1 --adopt-template templates/my-adopt.template
+#
+
+set system services ssh protocol-version v2
+set system authentication-order password
+set system login user mist class super-user
+set system login user mist authentication encrypted-password <ENCRYPTED_PASSWORD>
+set system login user mist authentication ssh-rsa "<SSH_PUBLIC_KEY>"
+set system services outbound-ssh client mist device-id <DEVICE_ID>
+set system services outbound-ssh client mist secret <SECRET>
+set system services outbound-ssh client mist services netconf keep-alive retry 12 timeout 5
+set system services outbound-ssh client mist <MIST_HOSTNAME> port 2200 timeout 60 retry 1000
+delete system phone-home

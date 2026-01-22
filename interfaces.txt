@@ -26,11 +26,13 @@ iface enp7s0 inet manual
 
 auto vmbr0
 iface vmbr0 inet static
-	address 10.38.10.15/24
-	gateway 10.38.10.1
+	address 10.38.110.15/24
+	gateway 10.38.110.1
 	bridge-ports enp2s0
 	bridge-stp off
 	bridge-fd 0
+	bridge-vlan-aware yes
+	bridge-vids 2-4094
 #Host-MGMT-eth00
 
 auto vmbr101
@@ -38,6 +40,8 @@ iface vmbr101 inet manual
 	bridge-ports enp3s0
 	bridge-stp off
 	bridge-fd 0
+	bridge-vlan-aware yes
+	bridge-vids 2-4094
 #VM-MGMT-eth01
 
 auto vmbr102
@@ -62,75 +66,12 @@ iface vmbr104 inet manual
 #Physical-eth04
 
 auto vmbr105
-iface vmbr105 inet manual
+iface vmbr105 inet static
+	address 10.38.255.15/24
 	bridge-ports enp7s0
 	bridge-stp off
 	bridge-fd 0
-#Physical-eth05
-
-auto vmbr201
-iface vmbr201 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#C1-D1
-
-auto vmbr202
-iface vmbr202 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#C1-D2
-
-auto vmbr203
-iface vmbr203 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#C2-D1
-
-auto vmbr204
-iface vmbr204 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#C2-D2
-
-auto vmbr205
-iface vmbr205 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#A1-D1
-
-auto vmbr206
-iface vmbr206 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#A1-D2
-
-auto vmbr207
-iface vmbr207 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#A2-D1
-
-auto vmbr208
-iface vmbr208 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#A2-D2
+#Direct_MGMT-eth05
 
 auto vmbr301
 iface vmbr301 inet manual
@@ -147,53 +88,28 @@ iface vmbr302 inet manual
 	mtu 9192
 #SSR-S2
 
-auto vmbr303
-iface vmbr303 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#A1-H1
-
-auto vmbr304
-iface vmbr304 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-	mtu 9192
-#A2-H2
-
-auto vmbr209
-iface vmbr209 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-#C1-S1
-
-auto vmbr210
-iface vmbr210 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-#C1-S2
-
-auto vmbr211
-iface vmbr211 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-#C2-S1
-
-auto vmbr212
-iface vmbr212 inet manual
-	bridge-ports none
-	bridge-stp off
-	bridge-fd 0
-#C2-S2
-
 auto vmbr500
 iface vmbr500 inet manual
 	bridge-ports none
 	bridge-stp off
 	bridge-fd 0
-#Dummy
+#C-A-Bridge
+
+auto vmbr501
+iface vmbr501 inet manual
+	bridge-ports none
+	bridge-stp off
+	bridge-fd 0
+#C-S-Bridge
+
+auto vmbr502
+iface vmbr502 inet manual
+	bridge-ports none
+	bridge-stp off
+	bridge-fd 0
+#Client-Bridge
+
+auto home
+iface home inet manual
+	vlan-id 40
+	vlan-raw-device enp3s0

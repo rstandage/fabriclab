@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Sensitive Mist adoption files - NEVER COMMIT!
+templates/*adopt*.template
+templates/*mist*.template
+!templates/example-*.template
+templates/*.secret
+*.secret
+
+# User-specific configurations containing org data
+config/*.conf
+!config/example.conf
+
+# Lab config ISOs (temporary files)
+*.iso
+/tmp/vjunos-config-*.iso
+
+# Extracted values from conversion script
+*values.txt
+*.values
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Proxmox/VM specific
+*.qcow2
+*.img

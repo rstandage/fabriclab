@@ -1,0 +1,11 @@
+# FabricLab-NG Python Requirements
+
+# Core dependencies (required)
+# None - uses only Python standard library for basic VM operations
+
+# Optional dependencies for Mist integration
+mistapi>=0.50.0
+
+# Optional dependencies for enhanced features
+pyyaml>=6.0
+colorama>=0.4.6
