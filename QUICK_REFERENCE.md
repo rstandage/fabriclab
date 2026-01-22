@@ -36,10 +36,9 @@ crontab -e  # Add: @reboot /root/fabriclab-ng/enable_lldp.sh
 # Basic
 ./fabriclab.py create --id 201 --name leaf1 --start
 
-# With Mist adoption
+# With Mist adoption (auto-enables lab config)
 ./fabriclab.py create --id 201 --name leaf1 \
-  --with-lab-config \
-  --adopt-template templates/mist-adopt.template \
+  --adopt-template templates/my-org-adopt.template \
   --start
 
 # Custom resources
@@ -69,6 +68,10 @@ telnet localhost 5201
   -i mist-commands.txt \
   -o templates/my-adopt.template \
   --values extracted-values.txt
+
+# OR just save set commands directly to a template file
+# Copy from Mist UI > Paste into templates/my-org-adopt.template
+# The script will auto-convert set commands to Junos config
 ```
 
 ## Management Commands

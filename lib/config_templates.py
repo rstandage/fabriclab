@@ -192,15 +192,15 @@ class LabConfigManager:
         Load the default lab switch configuration template
         
         Args:
-            template_path: Path to template config file (defaults to templates/lab_switch_default.config)
+            template_path: Path to template config file (defaults to templates/lab_switch_base.config)
             
         Returns:
             Configuration string or None
         """
         if template_path is None:
-            # Default to the template in the project
+            # Default to the base template in the project
             script_dir = Path(__file__).parent.parent
-            template_path = script_dir / "templates" / "lab_switch_default.config"
+            template_path = script_dir / "templates" / "lab_switch_base.config"
         
         try:
             if not template_path.exists():
@@ -271,31 +271,55 @@ class LabConfigManager:
                 logger.error(f"Adopt template not found: {adopt_template_path}")
                 return None
             
-            content = adopt_template_path.read_text().replace('"', '')
+            content = adopt_template_path.read_text()
             
             # Extract variables using patterns from Juniper documentation
             patterns = {
                 'encrypted_password': r'set system login user mist authentication encrypted-password (\S+)',
-                'ssh_rsa': r'set system login user mist authentication ssh-rsa (.+)',
+                'ssh_rsa': r'set system login user mist authentication ssh-rsa ["\']?([^"\'\n]+)["\']?',
                 'secret': r'set system services outbound-ssh client mist secret (\S+)',
-                'port_line': r'(set system services outbound-ssh client mist \S+ port \d+)',
-                'device_id': r'set system services outbound-ssh client mist device-id (\S+)'
+                'mist_hostname': r'set system services outbound-ssh client mist (\S+(?:mist|mistsys)\.(?:com|net))',
+                'device_id': r'set system services outbound-ssh client mist device-id (\S+)',
+                'netconf_keepalive': r'set system services outbound-ssh client mist services netconf keep-alive retry (\d+) timeout (\d+)',
+                'port_config': r'set system services outbound-ssh client mist \S+(?:mist|mistsys)\.(?:com|net) port (\d+) timeout (\d+) retry (\d+)'
             }
             
             variables = {}
             for key, pattern in patterns.items():
                 match = re.search(pattern, content)
                 if match:
-                    variables[key] = match.group(1)
+                    if key == 'netconf_keepalive':
+                        variables['keepalive_retry'] = match.group(1)
+                        variables['keepalive_timeout'] = match.group(2)
+                    elif key == 'port_config':
+                        variables['port'] = match.group(1)
+                        variables['conn_timeout'] = match.group(2)
+                        variables['conn_retry'] = match.group(3)
+                    else:
+                        variables[key] = match.group(1).strip().strip('"')
                 else:
                     logger.warning(f"Could not extract {key} from adopt template")
             
-            if len(variables) >= 5:
-                logger.info("✓ Extracted Mist adoption variables")
-                return variables
-            else:
-                logger.error("Failed to extract all required Mist variables")
+            # Set defaults if not found
+            if 'keepalive_retry' not in variables:
+                variables['keepalive_retry'] = '12'
+                variables['keepalive_timeout'] = '5'
+            if 'port' not in variables:
+                variables['port'] = '2200'
+                variables['conn_timeout'] = '60'
+                variables['conn_retry'] = '1000'
+            if 'mist_hostname' not in variables:
+                variables['mist_hostname'] = 'oc-term.mistsys.net'
+            
+            required = ['encrypted_password', 'ssh_rsa', 'secret', 'device_id']
+            missing = [k for k in required if k not in variables]
+            
+            if missing:
+                logger.error(f"Failed to extract required Mist variables: {missing}")
                 return None
+            
+            logger.info("✓ Extracted Mist adoption variables")
+            return variables
                 
         except Exception as e:
             logger.error(f"Failed to extract Mist variables: {e}")
@@ -321,7 +345,7 @@ class LabConfigManager:
         if 'user mist' in config:
             logger.info("Mist user already exists in config, will merge adoption settings")
         
-        # Build the adoption configuration following Juniper documentation format
+        # Build the adoption configuration in Junos format
         adoption_config = f"""
 system {{
     login {{
@@ -334,23 +358,27 @@ system {{
         }}
     }}
     services {{
+        ssh {{
+            protocol-version v2;
+        }}
         outbound-ssh {{
             client mist {{
-                device-id "{mist_vars['device_id']}";
+                device-id {mist_vars['device_id']};
                 secret "{mist_vars['secret']}";
                 keep-alive {{
-                    retry 12;
-                    timeout 5;
+                    retry {mist_vars.get('keepalive_retry', '12')};
+                    timeout {mist_vars.get('keepalive_timeout', '5')};
                 }}
                 services netconf;
-                {mist_vars.get('port_line', 'oc-term.mistsys.net')} {{
-                    port 2200;
-                    retry 1000;
-                    timeout 60;
+                {mist_vars.get('mist_hostname', 'oc-term.mistsys.net')} {{
+                    port {mist_vars.get('port', '2200')};
+                    retry {mist_vars.get('conn_retry', '1000')};
+                    timeout {mist_vars.get('conn_timeout', '60')};
                 }}
             }}
         }}
     }}
+    authentication-order password;
 }}
 """
         
