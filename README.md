@@ -182,33 +182,34 @@ You should see the FabricLab-NG command-line interface help text.
 
 ### Mist Adoption Template
 
-To automatically configure switches for Mist Cloud adoption, you need an adoption template file containing the unique credentials from your Mist organization.
+To automatically configure switches for Mist Cloud adoption, create an adoption template file from the Mist dashboard commands.
 
 **IMPORTANT**: Never commit adoption templates with real credentials to version control!
 
 #### Creating Your Adoption Template
 
 1. In Mist Dashboard, go to Organization > Inventory
-2. Click "Adopt Switches" and copy the configuration commands
-3. Save to a template file (e.g., `mist-adopt.template`)
+2. Click "Adopt Switches" and copy the configuration commands (set commands)
+3. Save to a template file in the `templates/` directory (e.g., `templates/my-org-adopt.template`)
+4. The template should contain the actual set commands from Mist
 
-The template should contain placeholders for unique values:
-
+**Example template content:**
 ```bash
-# Example: templates/mist-adopt.template
 set system services ssh protocol-version v2
 set system authentication-order password
 set system login user mist class super-user
-set system login user mist authentication encrypted-password <ENCRYPTED_PASSWORD>
-set system login user mist authentication ssh-rsa "<SSH_PUBLIC_KEY>"
-set system services outbound-ssh client mist device-id <DEVICE_ID>
-set system services outbound-ssh client mist secret <SECRET>
+set system login user mist authentication encrypted-password $6$xxxxx...
+set system login user mist authentication ssh-rsa "ssh-rsa AAAAB3..."
+set system services outbound-ssh client mist device-id xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+set system services outbound-ssh client mist secret abc123def456...
 set system services outbound-ssh client mist services netconf keep-alive retry 12 timeout 5
 set system services outbound-ssh client mist oc-term.eu.mist.com port 2200 timeout 60 retry 1000
 delete system phone-home
 ```
 
-See [Task 2](#task-2-adoption-template-script) below for a script to generate templates from Mist set commands.
+The script will automatically convert these set commands to proper Junos configuration format.
+
+**Security Note:** Files matching `templates/*adopt*.template` and `templates/*mist*.template` are automatically ignored by git to prevent accidental commits of sensitive data.
 
 ### Topology Configuration Files
 
@@ -242,18 +243,19 @@ Create a switch with automatic Mist Cloud adoption configuration:
 ```bash
 cd /root/fabriclab-ng
 
-# Create switch with Mist adoption config
+# Create switch with Mist adoption - auto-enables lab config
 ./fabriclab.py create --id 201 --name spine-1 \
-  --with-lab-config \
-  --adopt-template templates/mist-adopt.template \
+  --adopt-template templates/my-org-adopt.template \
   --start
 
 # The switch will boot and automatically:
 # 1. Load the base configuration
-# 2. Configure Mist adoption settings
+# 2. Apply Mist adoption settings from template
 # 3. Connect to Mist Cloud
 # 4. Appear in your Mist inventory
 ```
+
+**Note:** When you provide `--adopt-template`, lab config is automatically enabled. You don't need to specify `--with-lab-config`.
 
 ### Command Reference
 
@@ -263,30 +265,37 @@ cd /root/fabriclab-ng
 # Basic creation with defaults (4 cores, 8GB RAM)
 ./fabriclab.py create --id 201 --name leaf1 --start
 
+# Create with Mist adoption (lab config auto-enabled)
+./fabriclab.py create --id 202 --name leaf2 \
+  --adopt-template templates/my-org-adopt.template \
+  --start
+
 # Create with custom resources
-./fabriclab.py create --id 202 --name leaf2 --cores 4 --memory 8192 --start
+./fabriclab.py create --id 203 --name spine1 --cores 4 --memory 8192 --start
 
 # Create with specific vJunos version
-./fabriclab.py create --id 203 --name spine1 --version 23.2R1.14 --start
+./fabriclab.py create --id 204 --name spine2 --version 23.2R1.14 --start
 
 # Create with custom network bridges
-./fabriclab.py create --id 204 --name spine2 \
+./fabriclab.py create --id 205 --name spine3 \
   --bridges vmbr101 vmbr501 vmbr502 vmbr503 \
   --start
 ```
 
-#### Lab Configuration Disk
-
-Create configuration disks for automated switch deployment:
-
-```bash
-# Create standalone config disk (no Mist adoption)
+#### Lab Configuration Diskbasic config only)
 ./fabriclab.py lab --name spine-1
 
 # Create config disk with Mist adoption
-./fabriclab.py lab --name spine-1 --adopt-template templates/mist-adopt.template
+./fabriclab.py lab --name spine-1 \
+  --adopt-template templates/my-org-adopt.template
 
-# Create VM with integrated lab config in one command
+# Create VM with Mist adoption in one command (recommended)
+./fabriclab.py create --id 201 --name spine-1 \
+  --adopt-template templates/my-org-adopt.template \
+  --start
+```
+
+**Note:** The `--adopt-template` flag automatically enables lab config generation, so you don't need `--with-lab-config`.reate VM with integrated lab config in one command
 ./fabriclab.py create --id 201 --name spine-1 \
   --with-lab-config \
   --adopt-template templates/mist-adopt.template \
@@ -451,20 +460,23 @@ fabriclab-ng/
 ├── enable_lldp.sh            # LLDP forwarding enabler
 ├── interfaces.txt            # Proxmox network config template
 ├── requirements.txt          # Python dependencies
+├── .gitignore                # Git ignore rules (protects sensitive files)
 ├── lib/
 │   ├── __init__.py
 │   ├── proxmox_vm.py        # VM creation and management
 │   ├── mist_client.py       # Mist API integration
 │   └── config_templates.py  # Junos config and topology definitions
 ├── templates/
-│   ├── lab_switch_default.config  # Base switch config
-│   └── make-config.sh       # Juniper's config disk builder
-├── config/                   # Example configurations (user-specific)
-│   ├── access1.conf
-│   ├── access2.conf
-│   ├── core2.conf
-│   └── test-full.conf
-└── README.md
+│   ├── lab_switch_base.config         # Base switch config (non-sensitive)
+│   ├── make-config.sh                 # Juniper's config disk builder
+│   ├── example-mist-adoption.template # Example template format
+│   └── *.template                     # Your org adoption templates (gitignored)
+├── config/                   # Generated configs (gitignored)
+│   ├── README.md
+│   ├── example.conf
+│   └── *.conf, *.raw, *.iso  # Generated files
+├── README.md                 # Complete documentation
+└── QUICK_REFERENCE.md        # Command quick reference
 ```
 
 ## Troubleshooting

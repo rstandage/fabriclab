@@ -81,7 +81,12 @@ class FabricLabNG:
         logger.info(f"Creating virtual switch: {vm_name} (ID: {vm_id})")
         logger.info(f"{'='*60}")
         
-        # Create lab config disk if requested
+        # Auto-enable lab config if adopt template is provided
+        if adopt_template and not with_lab_config:
+            logger.info("Auto-enabling lab config (adopt template provided)")
+            with_lab_config = True
+        
+        # Create lab config disk if requested or if adopt template provided
         config_disk_path = None
         if with_lab_config:
             logger.info("\nCreating lab configuration disk...")

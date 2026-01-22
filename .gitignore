@@ -13,6 +13,7 @@ templates/*adopt*.template
 templates/*mist*.template
 !templates/example-*.template
 templates/*.secret
+templates/lab_switch_default.config
 *.secret
 
 # User-specific configurations containing org data
@@ -40,6 +41,11 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Documentation (optional - maintain externally)
+CHANGELOG.md
+MIGRATION_GUIDE.md
+COMPLETION_SUMMARY.md
 
 # Proxmox/VM specific
 *.qcow2
