@@ -11,6 +11,7 @@ build/
 # Sensitive Mist adoption files - NEVER COMMIT!
 templates/*adopt*.template
 templates/*mist*.template
+templates/*mist*.txt
 !templates/example-*.template
 templates/*.secret
 templates/lab_switch_default.config
@@ -18,7 +19,9 @@ templates/lab_switch_default.config
 
 # User-specific configurations containing org data
 config/*.conf
+config/*.raw
 !config/example.conf
+mist
 
 # Lab config ISOs (temporary files)
 *.iso

@@ -232,13 +232,20 @@ class LabConfigManager:
         Returns:
             Customized configuration string
         """
-        # Replace hostname
-        config = re.sub(
-            r'(system\s*\{[^}]*host-name\s+)\S+;',
-            rf'\1{hostname};',
-            config,
-            flags=re.DOTALL
-        )
+        # Replace hostname - handle both existing hostname and HOSTNAME placeholder
+        if 'host-name' in config:
+            config = re.sub(
+                r'host-name\s+\S+;',
+                f'host-name {hostname};',
+                config
+            )
+        else:
+            # If no hostname exists, add it after system {
+            config = re.sub(
+                r'(system\s*\{)',
+                rf'\1\n    host-name {hostname};',
+                config
+            )
         
         # Replace version if provided
         if junos_version:
